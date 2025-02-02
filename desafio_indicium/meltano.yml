@@ -1,0 +1,285 @@
+version: 1
+default_environment: dev
+project_id: e15f7605-a0c1-4056-aaee-9b665804871d
+environments:
+- name: dev
+- name: staging
+- name: prod
+
+plugins:
+  extractors:
+  - name: tap-postgres
+    variant: meltanolabs
+    pip_url: git+https://github.com/MeltanoLabs/tap-postgres.git
+    config:
+      database: northwind
+      host: localhost
+      port: 5433
+      user: northwind_user
+
+  - name: tap-postgres-categories
+    inherit_from: tap-postgres
+    select:
+    - public-categories.*
+
+  - name: tap-postgres-products
+    inherit_from: tap-postgres
+    select:
+    - public-products.*
+
+  - name: tap-postgres-suppliers
+    inherit_from: tap-postgres
+    select:
+    - public-suppliers.*
+
+  - name: tap-postgres-orders
+    inherit_from: tap-postgres
+    select:
+    - public-orders.*
+
+  - name: tap-postgres-customers
+    inherit_from: tap-postgres
+    select:
+    - public-customers.*
+
+  - name: tap-postgres-customer_customer_demo
+    inherit_from: tap-postgres
+    select:
+    - public-customer_customer_demo.*
+
+  - name: tap-postgres-customer_demographics
+    inherit_from: tap-postgres
+    select:
+    - public-customer_demographics.*
+
+  - name: tap-postgres-employees
+    inherit_from: tap-postgres
+    select:
+    - public-employees.*
+
+  - name: tap-postgres-employee_territories
+    inherit_from: tap-postgres
+    select:
+    - public-employee_territories.*
+
+  - name: tap-postgres-territories
+    inherit_from: tap-postgres
+    select:
+    - public-territories.*
+
+  - name: tap-postgres-region
+    inherit_from: tap-postgres
+    select:
+    - public-region.*
+
+  - name: tap-postgres-shippers
+    inherit_from: tap-postgres
+    select:
+    - public-shippers.*
+
+  - name: tap-postgres-us_states
+    inherit_from: tap-postgres
+    select:
+    - public-us_states.*
+
+  - name: tap-postgres-final
+    inherit_from: tap-postgres
+    config:
+      database: northwind_final
+      host: localhost
+      port: 5434
+      user: northwind_user
+      password: thewindisblowing  
+    select:
+      - public-orders.*
+      - public-order_details.*
+
+  - name: tap-csv
+    variant: meltanolabs
+    pip_url: git+https://github.com/MeltanoLabs/tap-csv.git
+
+  - name: tap-csv-order_details_initial
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: order_details
+        path: ../code-challenge/data/order_details.csv
+        keys:
+        - order_id
+        - product_id
+
+  - name: tap-csv-order_details
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: order_details
+        path: 
+          ../code-challenge/data/csv/order_details/${EXECUTION_DATE}/order_details.csv
+        keys:
+        - order_id
+        - product_id
+
+  - name: tap-csv-categories
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: categories
+        path: 
+          ../code-challenge/data/postgres/categories/${EXECUTION_DATE}/public-categories.csv
+        keys:
+        - category_id
+
+  - name: tap-csv-products
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: products
+        path: ../code-challenge/data/postgres/products/${EXECUTION_DATE}/public-products.csv
+        keys:
+        - product_id
+
+  - name: tap-csv-suppliers
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: suppliers
+        path: ../code-challenge/data/postgres/suppliers/${EXECUTION_DATE}/public-suppliers.csv
+        keys:
+        - supplier_id
+
+  - name: tap-csv-orders
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: orders
+        path: ../code-challenge/data/postgres/orders/${EXECUTION_DATE}/public-orders.csv
+        keys:
+        - order_id
+
+  - name: tap-csv-customers
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: customers
+        path: ../code-challenge/data/postgres/customers/${EXECUTION_DATE}/public-customers.csv
+        keys:
+        - customer_id
+
+  - name: tap-csv-customer_customer_demo
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: customer_customer_demo
+        path: 
+          ../code-challenge/data/postgres/customer_customer_demo/${EXECUTION_DATE}/public-customer_customer_demo.csv
+        keys:
+        - customer_id
+        - customer_type_id
+
+  - name: tap-csv-customer_demographics
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: customer_demographics
+        path: 
+          ../code-challenge/data/postgres/customer_demographics/${EXECUTION_DATE}/public-customer_demographics.csv
+        keys:
+        - customer_type_id
+
+  - name: tap-csv-employees
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: employees
+        path: ../code-challenge/data/postgres/employees/${EXECUTION_DATE}/public-employees.csv
+        keys:
+        - employee_id
+
+  - name: tap-csv-employee_territories
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: employee_territories
+        path: 
+          ../code-challenge/data/postgres/employee_territories/${EXECUTION_DATE}/public-employee_territories.csv
+        keys:
+        - employee_id
+        - territory_id
+
+  - name: tap-csv-territories
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: territories
+        path: 
+          ../code-challenge/data/postgres/territories/${EXECUTION_DATE}/public-territories.csv
+        keys:
+        - territory_id
+
+  - name: tap-csv-region
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: region
+        path: ../code-challenge/data/postgres/region/${EXECUTION_DATE}/public-region.csv
+        keys:
+        - region_id
+
+  - name: tap-csv-shippers
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: shippers
+        path: ../code-challenge/data/postgres/shippers/${EXECUTION_DATE}/public-shippers.csv
+        keys:
+        - shipper_id
+
+  - name: tap-csv-us_states
+    inherit_from: tap-csv
+    config:
+      files:
+      - entity: us_states
+        path: ../code-challenge/data/postgres/us_states/${EXECUTION_DATE}/public-us_states.csv
+        keys:
+        - state_id
+
+  loaders:
+  - name: target-postgres
+    variant: meltanolabs
+    pip_url: meltanolabs-target-postgres
+    config:
+      database: northwind_final
+      host: localhost
+      port: 5434
+      user: northwind_user
+      default_target_schema: public
+
+  - name: target-csv
+    variant: meltanolabs
+    pip_url: git+https://github.com/MeltanoLabs/target-csv.git
+    config:
+      destination_path: ${DYNAMIC_PATH}
+    
+  
+  - name: target-csv-final
+    inherit_from: target-csv
+    config:
+      destination_path: ../code-challenge/data/output
+
+jobs:
+- name: load_to_northwind_final_db
+  tasks:
+  - tap-csv-categories target-postgres
+  - tap-csv-products target-postgres
+  - tap-csv-suppliers target-postgres
+  - tap-csv-order_details target-postgres
+  - tap-csv-orders target-postgres
+  - tap-csv-customers target-postgres
+  - tap-csv-customer_customer_demo target-postgres
+  - tap-csv-customer_demographics target-postgres
+  - tap-csv-employees target-postgres
+  - tap-csv-employee_territories target-postgres
+  - tap-csv-territories target-postgres
+  - tap-csv-region target-postgres
+  - tap-csv-shippers target-postgres
+  - tap-csv-us_states target-postgres
